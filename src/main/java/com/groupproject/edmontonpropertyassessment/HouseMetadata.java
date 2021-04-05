@@ -220,6 +220,29 @@ public class HouseMetadata {
         return address.get();
     }
     
+    public String getCSVLine() {
+    String lineCopy = String.join(",",
+            accountNum.get(),
+            suite.get(),
+            houseNum.get(),
+            streetName.get(),
+            garageExist.get(),
+            nbhdNum.get(),
+            nbhdName.get(),
+            ward.get(),
+            assessedVal.get(),
+            latitude.get(),
+            longitude.get(),
+            pointLoc.get(),
+            assessmentClassP1.get(),
+            assessmentClassP2.get(),
+            assessmentClassP3.get(),
+            assessmentClass1.get(),
+            assessmentClass2.get(),
+            assessmentClass3.get());
+
+    return lineCopy;
+}
     //=============================Setters======================================
 
     public void setAccountNum(String accountNum) {
