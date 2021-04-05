@@ -1,5 +1,7 @@
 package com.groupproject.edmontonpropertyassessment;
 
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +20,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -29,6 +32,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 
@@ -149,12 +156,32 @@ public class App extends Application {
                 nbhdField,
                 acLabel,
                 acCombo);
+        ////////
+        // BEGIN EDITS FOR EXPORT OPTIONS
+        ////////
+        VBox expOptions = new VBox(10);
+        Text exp = new Text("Export Options:");
+
+        CheckBox check1 = new CheckBox("Filtered Property Data (.csv)");
+        CheckBox check2 = new CheckBox("Data Summary (.txt)");
+        
+        Button exportButton = new Button("Export Data");
+        Text indicator = new Text("");
+        indicator.setFont(Font.font("ariel", FontWeight.NORMAL, FontPosture.ITALIC, 14));
+        
+        expOptions.getChildren().addAll(exp, check1, check2, exportButton);
+        
+        FileChooser fc = new FileChooser();
         
         final VBox statsVBox = new VBox();
         statsVBox.setSpacing(5);
         statsVBox.setPadding(new Insets(5, 5, 5, 5));
-        statsVBox.getChildren().addAll(searchVBox, buttonHBox, statsText);
-        statsVBox.setPrefWidth(200);
+        statsVBox.getChildren().addAll(searchVBox, buttonHBox, statsText, expOptions, indicator);
+        statsVBox.setPrefWidth(250);
+        
+        ////////
+        // END EDITS FOR EXPORT OPTIONS
+        ////////
         
         HBox hbox = new HBox(statsVBox, tableVBox);
         ((Group) scene.getRoot()).getChildren().addAll(hbox);
@@ -185,6 +212,8 @@ public class App extends Application {
         assessmentClassFilter.bind(Bindings.createObjectBinding(() ->
             house -> acCombo.getValue() == null || house.getAssessmentClass1().contains(acCombo.getValue().toString().toUpperCase()),
                 acCombo.valueProperty()));
+              
+        List<HouseMetadata> exportList = new ArrayList<>();
         
         search.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -203,6 +232,7 @@ public class App extends Application {
                 table.setItems(sortableHouses);
                 sortableHouses.comparatorProperty().bind(table.comparatorProperty());
                 if (sortableHouses.size() > 1) {
+                    exportList.addAll(sortableHouses);
                     List<Double> filteredValues = DataUtils.houseValues(filteredHouses);
                         statsText.setText("Statistics of Assessed Values: \n"
                         + "\nNumber of properties: " + DataUtils.n(filteredValues) 
@@ -214,6 +244,7 @@ public class App extends Application {
                         + "\nStandard deviation: " + FormatterUtils.valueFormatter(DataUtils.stdev(filteredValues))
                         );
                 } else {
+                    exportList.removeAll(exportList);
                     statsText.clear();
                 }
             }
@@ -230,6 +261,85 @@ public class App extends Application {
             table.setItems(houses);
             }
         });
+        
+        ///////
+        // BEGIN EXPORT BUTTON FUNCTIONALITY
+        ///////
+        exportButton.setOnAction( actionEvent -> {
+            if (!(check1.isSelected() || check2.isSelected())){
+                indicator.setText("No data selected!");
+                return;
+            }else{
+                indicator.setText("");
+            }
+            fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All files", "*.*"));
+            fc.setInitialFileName("propertyout.csv");
+            File out = fc.showSaveDialog(stage);
+            if (out != null){
+                try{
+                    PrintWriter pw = new PrintWriter(out);
+                    StringBuilder propOut = new StringBuilder();
+                    
+                    if (check1.isSelected()){
+                        
+                        for (HouseMetadata p: filteredHouses){
+                            propOut.append(p.getAccountNum());
+                            propOut.append(",");
+                            propOut.append(p.getSuite());
+                            propOut.append(",");
+                            propOut.append(p.getHouseNum());
+                            propOut.append(",");
+                            propOut.append(p.getStreetName());
+                            propOut.append(",");
+                            propOut.append(p.getGarageExist());
+                            propOut.append(",");
+                            propOut.append(p.getNbhdNum());
+                            propOut.append(",");
+                            propOut.append(p.getNbhdName());
+                            propOut.append(",");
+                            propOut.append(p.getWard());
+                            propOut.append(",");
+                            propOut.append(p.getAssessedVal());
+                            propOut.append(",");
+                            propOut.append(p.getLatitude());
+                            propOut.append(",");
+                            propOut.append(p.getLongitude());
+                            propOut.append(",");
+                            propOut.append(p.getAssessmentClassP1());
+                            propOut.append(",");
+                            propOut.append(p.getAssessmentClassP2());
+                            propOut.append(",");
+                            propOut.append(p.getAssessmentClassP3());
+                            propOut.append("\n");
+                        }
+                            //System.out.format("propout %s:", propOut);
+                            pw.append(propOut);
+                            pw.close();
+                    }
+                           
+                            
+                    
+                    if (check2.isSelected()){
+                        fc.setInitialFileName("filteredstats.txt");
+                        out = fc.showSaveDialog(stage);
+                        PrintWriter pw2 = new PrintWriter(out);
+                        pw2.append(statsText.getText());
+                        pw2.flush();
+                        pw2.close();
+                    }
+                    
+
+                }catch (Exception e){
+                    System.out.format("Error: %s", e);
+                    //e.printStackTrace();
+                    return;
+                }
+            }
+        } );
+        ///////
+        // END EXPORT BUTTON FUNCTIONALITY
+        ///////
+
     }
 
     public static void main(String[] args) {
