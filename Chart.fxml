@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="490.0" prefWidth="755.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.groupproject.edmontonpropertyassessment.ChartController">
+<AnchorPane id="AnchorPane" prefHeight="490.0" prefWidth="755.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mile3pkg.ChartController">
    <children>
-      <Label alignment="CENTER" layoutX="197.0" layoutY="14.0" prefHeight="30.0" prefWidth="334.0" text="Chart view of Edmonton Properties" textFill="#dd2828">
+      <Label fx:id="title" alignment="CENTER" layoutX="181.0" layoutY="14.0" prefHeight="30.0" prefWidth="534.0" text="Chart view of Edmonton Properties" textFill="#dd2828">
          <font>
             <Font name="System Bold Italic" size="18.0" />
          </font></Label>
@@ -31,6 +31,6 @@
             </Button>
          </children>
       </VBox>
-      <PieChart fx:id="pieChartView" layoutX="215.0" layoutY="60.0" />
+      <PieChart fx:id="pieChartView" layoutX="181.0" layoutY="40.0" prefHeight="446.0" prefWidth="534.0" />
    </children>
 </AnchorPane>
