@@ -1,12 +1,12 @@
 package com.groupproject.edmontonpropertyassessment;
 
+package mile3pkg;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,6 +30,7 @@ import javafx.scene.chart.PieChart;
 import javafx.stage.Stage;
 
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 
@@ -49,6 +50,8 @@ public class ChartController implements Initializable {
     
     @FXML private ToggleGroup categoryTooggleGroup;
     
+    @FXML private Label title;
+    
     ObservableList<PieChart.Data> classList;
     ObservableList<PieChart.Data> wardList;
     
@@ -67,6 +70,7 @@ public class ChartController implements Initializable {
         
         //get an observable list of both scenarios ready
         classList = assessmentClassData();
+        wardList = wardData();
         
     }
     
@@ -81,11 +85,11 @@ public class ChartController implements Initializable {
     }
     
     public void setAssessmentChart(){
-        ObservableList<PieChart.Data> constructedClassList = assessmentClassData();
-        pieChartView.setData(constructedClassList);
+        title.setText("Chart view of Edmonton Properties by Assessment Class");
+        pieChartView.setData(classList);
     }
     public void setWardChart(){
-        ObservableList<PieChart.Data> constructedWardList = wardData();
+        title.setText("Chart view of Edmonton Properties by Wards");
         pieChartView.setData(wardList);
     }
     //=======================================================================================
@@ -101,35 +105,38 @@ public class ChartController implements Initializable {
         
         return constructedClassList;  //return the observable list
     }
+    
+    //=======================================================================================
+    //method to get the class totals for each assessment class cateogry
     private Map<String, Double> getClassTotal() {
         Map<String, Double> classTotal = new HashMap<>();
-        classTotal.put("RESDENTIAL", 0.0);
+        classTotal.put("RESIDENTIAL", 0.0);
         classTotal.put("NON-RES", 0.0);
         classTotal.put("COMMERCIAL", 0.0);
         classTotal.put("FARMLAND", 0.0);
-        classTotal.put("OTHER RESDENTIAL", 0.0);
+        classTotal.put("OTHER RESIDENTIAL", 0.0);
         List<HouseMetadata> houses = fileParser();
         for(int i=0; i<houses.size();i++){
+            //System.out.println(classTotal.get("RESIDENTIAL") + (double)Integer.parseInt(houses.get(i).getAssessedVal()));
+            //classTotal.put(houses.get(i).getAssessedVal(), classTotal.get(houses.get(i).getAssessmentClass1()) + (double)Integer.parseInt(houses.get(i).getAssessedVal()));
             switch (houses.get(i).getAssessmentClass1()) {
                 case "RESIDENTIAL":
-                    classTotal.put("RESIDENTIAL", classTotal.get("RESIDENTIAL") + 
-                            Double.parseDouble(houses.get(i).getFormattedVal()));
+                    classTotal.put("RESIDENTIAL", classTotal.get("RESIDENTIAL") + (double)Integer.parseInt(houses.get(i).getAssessedVal()));
                     break;
                 case "COMMERCIAL":
-                    classTotal.put("COMMERCIAL", classTotal.get("COMMERCIAL") + 
-                            Double.parseDouble(houses.get(i).getFormattedVal()));
+                    classTotal.put("COMMERCIAL", classTotal.get("COMMERCIAL") + (double)Integer.parseInt(houses.get(i).getAssessedVal()));
                     break;
                 case "OTHER RESIDENTIAL":
                     classTotal.put("OTHER RESIDENTIAL", classTotal.get("OTHER RESIDENTIAL") + 
-                            Double.parseDouble(houses.get(i).getFormattedVal()));
+                            (double)Integer.parseInt(houses.get(i).getAssessedVal()));
                     break;
                 case "FARMLAND":
                     classTotal.put("FARMLAND", classTotal.get("FARMLAND") + 
-                            Double.parseDouble(houses.get(i).getFormattedVal()));
+                            (double)Integer.parseInt(houses.get(i).getAssessedVal()));
                     break;
                 default:
                     classTotal.put("NON-RES", classTotal.get("NON-RES") + 
-                            Double.parseDouble(houses.get(i).getFormattedVal()));
+                            (double)Integer.parseInt(houses.get(i).getAssessedVal()));
                     break;
             }
         }
@@ -158,51 +165,51 @@ public class ChartController implements Initializable {
         for(int i=0; i<houses.size();i++){
             if (null!=houses.get(i).getWard())switch (houses.get(i).getWard()) {
                 case "Ward 1":
-                    wardTotal.put("Ward 1", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 1", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 1"));
                     break;
                 case "Ward 2":
-                    wardTotal.put("Ward 2", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 2", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 2"));
                     break;
                 case "Ward 3":
-                    wardTotal.put("Ward 3", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 3", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 3"));
                     break;
                 case "Ward 4":
-                    wardTotal.put("Ward 4", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 4", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 4"));
                     break;
                 case "Ward 5":
-                    wardTotal.put("Ward 5", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 5", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 5"));
                     break;
                 case "Ward 6":
-                    wardTotal.put("Ward 6", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 6", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 6"));
                     break;
                 case "Ward 7":
-                    wardTotal.put("Ward 7", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 7", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 7"));
                     break;
                 case "Ward 8":
-                    wardTotal.put("Ward 8", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 8", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 8"));
                     break;
                 case "Ward 9":
-                    wardTotal.put("Ward 9", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 9", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 9"));
                     break;
                 case "Ward 10":
-                    wardTotal.put("Ward 10", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 10", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 10"));
                     break;
                 case "Ward 11":
-                    wardTotal.put("Ward 11", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 11", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 11"));
                     break;
                 case "Ward 12":
-                    wardTotal.put("Ward 12", Double.parseDouble(houses.get(i).getFormattedVal()) +
+                    wardTotal.put("Ward 12", (double)Integer.parseInt(houses.get(i).getAssessedVal()) +
                             wardTotal.get("Ward 12"));
                     break;
                 default:
@@ -236,7 +243,6 @@ public class ChartController implements Initializable {
             
             while (line != null) {
                 HouseMetadata house = new HouseMetadata(line);
-                
                 houses.add(house);
                 
                 line = br.readLine();
@@ -244,12 +250,13 @@ public class ChartController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("Returned all houses");
         return houses;
     }
     //=======================================================================================
     //Method used to return to table view 
     public void tableButtonPressed(ActionEvent event) throws IOException{
-        Parent tableParent = FXMLLoader.load(getClass().getResource("Assessment.fxml"));
+        Parent tableParent = FXMLLoader.load(getClass().getResource("Table.fxml"));
         Scene tableView = new Scene(tableParent);
         
         //stage information
